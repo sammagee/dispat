@@ -1,22 +1,31 @@
-import Navigation from '@/components/Layouts/Navigation'
 import { useAuth } from '@/hooks/auth'
+import Link from 'next/link'
+import AppLogo from '../AppLogo'
+import NoSSR from '../NoSSR'
+import UserDropdown from './UserDropdown'
 
 const AppLayout = ({ header, children }) => {
-    const { user } = useAuth({ middleware: 'auth' })
+    const { user } = useAuth()
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <Navigation user={user} />
-
+        <div className="flex flex-col min-h-screen">
             {/* Page Heading */}
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <header className="flex items-center justify-between w-full h-16 pl-4 pr-6 border-b border-gray-300">
+                <Link href="/">
+                    <a>
+                        <AppLogo className="w-10 h-10 text-gray-800" />
+                    </a>
+                </Link>
+
+                <div className="flex items-center space-x-6">
                     {header}
+
+                    <NoSSR>{user && <UserDropdown user={user} />}</NoSSR>
                 </div>
             </header>
 
             {/* Page Content */}
-            <main>{children}</main>
+            <main className="flex flex-1">{children}</main>
         </div>
     )
 }

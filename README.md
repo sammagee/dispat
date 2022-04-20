@@ -1,14 +1,20 @@
 # Dispat
 
-## Usage
+## Setup
 
-### Setup
-
-This command will install all dependencies for the frontend project.
+Please ensure you have [NodeJS](https://nodejs.org/en/) installed. This command will install all dependencies for the frontend project.
 
 ```sh
 npm install
 ```
+
+Next, copy the environment file example:
+
+```sh
+cp .env.example .env
+```
+
+## Usage
 
 ### Run
 
