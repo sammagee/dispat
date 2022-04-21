@@ -12,7 +12,6 @@ export default function useWhiteboard() {
   const removeBoard = async (id, selectedBoard, setSelectedBoard) => {
     if (confirm('Are you sure you want to delete this board?')) {
       await axios.delete(`/api/boards/${id}`)
-      refetch()
 
       if (selectedBoard === 0) setSelectedBoard(0)
       else setSelectedBoard(selectedBoard - 1)

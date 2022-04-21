@@ -1,9 +1,7 @@
 import Job from '@/components/Job'
 import AppLayout from '@/components/Layouts/AppLayout'
 import useEcho from '@/hooks/echo'
-import useLocomotives from '@/hooks/locomotives'
 import useWhiteboard from '@/hooks/whiteboard'
-import useWorkers from '@/hooks/workers'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
 import Head from 'next/head'
@@ -12,11 +10,9 @@ import '../lib/echo'
 
 export default function Home() {
   const { boards, removeBoard, refetch } = useWhiteboard()
-  const { locomotives } = useLocomotives()
-  const { workers } = useWorkers()
   useEcho({
     channel: 'board',
-    event: 'board.deleted',
+    event: ['board.deleted'],
     callback: e => {
       refetch()
     },
@@ -93,7 +89,7 @@ export default function Home() {
                   className="relative flex-1 w-full p-6 overflow-x-auto bg-gray-100 focus:outline-none snap-x snap-mandatory">
                   <div className="flex space-x-6 snap-x snap-mandatory">
                     {board.jobs.map(job => (
-                      <Job key={job.id} job={job} />
+                      <Job key={job.id} job={job} refetch={refetch} />
                     ))}
                     <div className="flex-shrink-0 w-6 !ml-0" />
                   </div>
