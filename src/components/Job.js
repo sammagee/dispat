@@ -1,9 +1,17 @@
 import useEvent from '@/hooks/event'
 import useJobs from '@/hooks/jobs'
+import useLocomotives from '@/hooks/locomotives'
+import useWorkers from '@/hooks/workers'
+import Autocomplete from './Autocomplete'
 import Item from './Item'
 
 export default function Job({ job, refetch }) {
   const { removeJob, removeJobLocomotive, removeJobAssignee } = useJobs()
+  const { locomotives } = useLocomotives()
+  const { workers } = useWorkers()
+
+  const addLocomotive = val => console.log(val)
+  const addAssignee = val => console.log(val)
 
   useEvent({
     channel: 'board',
@@ -48,16 +56,47 @@ export default function Job({ job, refetch }) {
       </header>
 
       <div>
-        <h3 className="pb-3 mb-3 text-sm font-medium tracking-wide text-gray-700 uppercase border-b border-gray-300">
-          Locomotives
-        </h3>
+        <header className="flex items-center justify-between pb-3 mb-3 border-b border-gray-300">
+          <h3 className="text-sm font-medium tracking-wide text-gray-700 uppercase ">
+            Locomotives
+          </h3>
+
+          <Autocomplete
+            placeholder="Search for a locomotive..."
+            button={
+              <button className="flex items-center justify-end flex-1">
+                <div className="flex items-center space-x-0.5 text-gray-600">
+                  <svg
+                    className="w-3 h-3"
+                    viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-xs font-medium tracking-wide uppercase">
+                    Add
+                  </span>
+                </div>
+              </button>
+            }
+            items={locomotives?.map(locomotive => ({
+              append: locomotive.direction[0].toUpperCase(),
+              display: locomotive.name,
+              value: locomotive.id,
+            }))}
+            onChange={addLocomotive}
+          />
+        </header>
         <div className="space-y-2">
           {job.locomotives.length > 0 ? (
             job.locomotives.map(locomotive => (
               <Item key={locomotive.id}>
                 <div className="flex items-center justify-between flex-1">
                   <p className="font-medium text-gray-900">{locomotive.name}</p>
-                  <span className="inline-flex items-center justify-center pl-6 text-sm font-medium text-gray-700 border-l border-gray-200">
+                  <span className="inline-flex items-center justify-center pl-6 font-mono text-sm font-medium text-gray-700 border-l border-gray-200">
                     {locomotive.direction[0].toUpperCase()}
                   </span>
                 </div>
@@ -88,9 +127,40 @@ export default function Job({ job, refetch }) {
         </div>
       </div>
       <div>
-        <h3 className="pb-3 mb-3 text-sm font-medium tracking-wide text-gray-700 uppercase border-b border-gray-300">
-          Assignees
-        </h3>
+        <header className="flex items-center justify-between pb-3 mb-3 border-b border-gray-300">
+          <h3 className="text-sm font-medium tracking-wide text-gray-700 uppercase ">
+            Assignees
+          </h3>
+
+          <Autocomplete
+            placeholder="Search for a worker..."
+            button={
+              <button className="flex items-center justify-end flex-1">
+                <div className="flex items-center space-x-0.5 text-gray-600">
+                  <svg
+                    className="w-3 h-3"
+                    viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                      fillRule="evenodd"
+                      d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-xs font-medium tracking-wide uppercase">
+                    Add
+                  </span>
+                </div>
+              </button>
+            }
+            items={workers?.map(worker => ({
+              append: worker.role[0].toUpperCase(),
+              display: `${worker.last_name}, ${worker.first_name}`,
+              value: worker.id,
+            }))}
+            onChange={addAssignee}
+          />
+        </header>
         <div className="space-y-2">
           {job.assignees.length > 0 ? (
             job.assignees.map(assignee => (
@@ -99,7 +169,7 @@ export default function Job({ job, refetch }) {
                   <p className="font-medium text-gray-900">
                     {assignee.first_name} {assignee.last_name}
                   </p>
-                  <span className="inline-flex items-center justify-center pl-6 text-sm font-medium text-gray-700 border-l border-gray-200">
+                  <span className="inline-flex items-center justify-center pl-6 font-mono text-sm font-medium text-gray-700 border-l border-gray-200">
                     {assignee.role[0].toUpperCase()}
                   </span>
                 </div>

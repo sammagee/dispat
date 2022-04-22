@@ -102,7 +102,7 @@ export default function Home() {
                     ))}
 
                     <button
-                      className="relative flex items-center justify-center flex-shrink-0 w-12 space-x-1 bg-gray-200 rounded hover:bg-gray-300"
+                      className="relative flex items-center justify-center flex-shrink-0 w-12 space-x-1 text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
                       onClick={() => createJob(board.id)}>
                       <div className="absolute flex items-center justify-center flex-1 space-x-1 transform rotate-90 w-36">
                         <svg
