@@ -5,9 +5,11 @@ import { useRef, useState } from 'react'
 import Autocomplete from './Autocomplete'
 import Item from './Item'
 
-export default function Job({ job, refetch }) {
+export default function Job({ job }) {
   const nameInput = useRef(null)
   const {
+    addAssigneeToJob,
+    addLocomotiveToJob,
     removeJob,
     removeJobLocomotive,
     removeJobAssignee,
@@ -36,8 +38,13 @@ export default function Job({ job, refetch }) {
     }
   }
 
-  const addLocomotive = val => console.log(val)
-  const addAssignee = val => console.log(val)
+  const addLocomotive = async locomotive => {
+    await addLocomotiveToJob(job.id, locomotive.value)
+  }
+
+  const addAssignee = async worker => {
+    await addAssigneeToJob(job.id, worker.value)
+  }
 
   return (
     <div className="w-full p-4 bg-gray-200 min-w-[20rem] max-w-sm rounded space-y-6 snap-center relative group">
@@ -99,11 +106,19 @@ export default function Job({ job, refetch }) {
                 </div>
               </button>
             }
-            items={locomotives?.map(locomotive => ({
-              append: locomotive.direction[0].toUpperCase(),
-              display: locomotive.name,
-              value: locomotive.id,
-            }))}
+            items={locomotives
+              ?.map(locomotive => ({
+                append: locomotive.direction[0].toUpperCase(),
+                display: locomotive.name,
+                value: locomotive.id,
+              }))
+              .filter(locomotive => {
+                const found = job.locomotives.find(
+                  l => l.id === locomotive.value,
+                )
+
+                return !Boolean(found)
+              })}
             onChange={addLocomotive}
           />
         </header>
@@ -170,11 +185,17 @@ export default function Job({ job, refetch }) {
                 </div>
               </button>
             }
-            items={workers?.map(worker => ({
-              append: worker.role[0].toUpperCase(),
-              display: `${worker.last_name}, ${worker.first_name}`,
-              value: worker.id,
-            }))}
+            items={workers
+              ?.map(worker => ({
+                append: worker.role[0].toUpperCase(),
+                display: `${worker.last_name}, ${worker.first_name}`,
+                value: worker.id,
+              }))
+              .filter(worker => {
+                const found = job.assignees.find(a => a.id === worker.value)
+
+                return !Boolean(found)
+              })}
             onChange={addAssignee}
           />
         </header>

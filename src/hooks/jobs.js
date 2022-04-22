@@ -1,9 +1,17 @@
 import axios from '@/lib/axios'
 
 export default function useJobs() {
-  const removeJob = async id => {
+  const addAssigneeToJob = async (jobId, assigneeId) => {
+    await axios.post(`/api/jobs/${jobId}/assignees`, { id: assigneeId })
+  }
+
+  const addLocomotiveToJob = async (jobId, locomotiveId) => {
+    await axios.post(`/api/jobs/${jobId}/locomotives`, { id: locomotiveId })
+  }
+
+  const removeJob = async jobId => {
     if (confirm('Are you sure you want to delete this job?')) {
-      await axios.delete(`/api/jobs/${id}`)
+      await axios.delete(`/api/jobs/${jobId}`)
     }
   }
 
@@ -19,5 +27,12 @@ export default function useJobs() {
     await axios.put(`/api/jobs/${jobId}`, data)
   }
 
-  return { removeJob, removeJobLocomotive, removeJobAssignee, updateJob }
+  return {
+    addAssigneeToJob,
+    addLocomotiveToJob,
+    removeJob,
+    removeJobLocomotive,
+    removeJobAssignee,
+    updateJob,
+  }
 }
