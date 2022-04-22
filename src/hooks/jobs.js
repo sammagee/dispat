@@ -15,5 +15,9 @@ export default function useJobs() {
     await axios.delete(`/api/jobs/${jobId}/assignees/${assigneeId}`)
   }
 
-  return { removeJob, removeJobLocomotive, removeJobAssignee }
+  const updateJob = async (jobId, data) => {
+    await axios.put(`/api/jobs/${jobId}`, data)
+  }
+
+  return { removeJob, removeJobLocomotive, removeJobAssignee, updateJob }
 }

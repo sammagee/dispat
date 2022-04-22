@@ -1,6 +1,6 @@
 import Job from '@/components/Job'
 import AppLayout from '@/components/Layouts/AppLayout'
-import useEvent from '@/hooks/event'
+import useEvents from '@/hooks/events'
 import useWhiteboard from '@/hooks/whiteboard'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
@@ -12,21 +12,7 @@ export default function Home() {
   const { boards, createJob, removeBoard, refetch } = useWhiteboard()
   const [selectedBoard, setSelectedBoard] = useState(0)
 
-  useEvent({
-    channel: 'board',
-    event: 'board.deleted',
-    callback: e => {
-      refetch()
-    },
-  })
-
-  useEvent({
-    channel: 'board',
-    event: 'job.created',
-    callback: e => {
-      refetch()
-    },
-  })
+  useEvents({ callback: refetch })
 
   return (
     <AppLayout>

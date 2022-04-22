@@ -1,46 +1,63 @@
-import useEvent from '@/hooks/event'
 import useJobs from '@/hooks/jobs'
 import useLocomotives from '@/hooks/locomotives'
 import useWorkers from '@/hooks/workers'
+import { useRef, useState } from 'react'
 import Autocomplete from './Autocomplete'
 import Item from './Item'
 
 export default function Job({ job, refetch }) {
-  const { removeJob, removeJobLocomotive, removeJobAssignee } = useJobs()
+  const nameInput = useRef(null)
+  const {
+    removeJob,
+    removeJobLocomotive,
+    removeJobAssignee,
+    updateJob,
+  } = useJobs()
   const { locomotives } = useLocomotives()
   const { workers } = useWorkers()
+  const [editingName, setEditingName] = useState(false)
+  const [editedName, setEditedName] = useState(job.name)
+
+  const editName = () => {
+    setEditingName(true)
+    setTimeout(() => nameInput.current?.focus(), 0)
+  }
+
+  const cancelEditingName = async event => {
+    if (event.key === 'Escape') {
+      setEditingName(false)
+      setEditedName(job.name)
+    }
+
+    if (event.key === 'Enter') {
+      await updateJob(job.id, { name: editedName })
+      job.name = editedName
+      setEditingName(false)
+    }
+  }
 
   const addLocomotive = val => console.log(val)
   const addAssignee = val => console.log(val)
 
-  useEvent({
-    channel: 'board',
-    event: 'job.deleted',
-    callback: e => {
-      refetch()
-    },
-  })
-
-  useEvent({
-    channel: 'board',
-    event: 'job.locomotive-deleted',
-    callback: e => {
-      refetch()
-    },
-  })
-
-  useEvent({
-    channel: 'board',
-    event: 'job.assignee-deleted',
-    callback: e => {
-      refetch()
-    },
-  })
-
   return (
     <div className="w-full p-4 bg-gray-200 min-w-[20rem] max-w-sm rounded space-y-6 snap-center relative group">
       <header>
-        <h2 className="text-lg font-medium text-gray-600">{job.name}</h2>
+        <div onDoubleClick={editName} onKeyDown={cancelEditingName}>
+          {editingName ? (
+            <input
+              ref={nameInput}
+              className="text-lg font-medium text-gray-600 bg-transparent border-none focus:outline-none"
+              placeholder="Job name"
+              type="text"
+              defaultValue={editedName}
+              onChange={e => setEditedName(e.target.value)}
+            />
+          ) : (
+            <h2 className="text-lg font-medium text-gray-600 pointer-events-none">
+              {job.name}
+            </h2>
+          )}
+        </div>
 
         <button
           className="absolute inline-flex items-center justify-center w-5 h-5 text-gray-500 bg-gray-200 rounded-full opacity-0 -top-2 -right-2 hover:bg-gray-300 group-hover:opacity-100"
