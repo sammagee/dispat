@@ -18,5 +18,9 @@ export default function useWhiteboard() {
     }
   }
 
-  return { boards, removeBoard, refetch }
+  const createJob = async boardId => {
+    await axios.post(`/api/boards/${boardId}/jobs`)
+  }
+
+  return { boards, createJob, removeBoard, refetch }
 }

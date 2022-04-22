@@ -1,6 +1,6 @@
 import Job from '@/components/Job'
 import AppLayout from '@/components/Layouts/AppLayout'
-import useEcho from '@/hooks/echo'
+import useEvent from '@/hooks/event'
 import useWhiteboard from '@/hooks/whiteboard'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
@@ -9,15 +9,24 @@ import { useState } from 'react'
 import '../lib/echo'
 
 export default function Home() {
-  const { boards, removeBoard, refetch } = useWhiteboard()
-  useEcho({
+  const { boards, createJob, removeBoard, refetch } = useWhiteboard()
+  const [selectedBoard, setSelectedBoard] = useState(0)
+
+  useEvent({
     channel: 'board',
-    event: ['board.deleted'],
+    event: 'board.deleted',
     callback: e => {
       refetch()
     },
   })
-  const [selectedBoard, setSelectedBoard] = useState(0)
+
+  useEvent({
+    channel: 'board',
+    event: 'job.created',
+    callback: e => {
+      refetch()
+    },
+  })
 
   return (
     <AppLayout>
@@ -86,12 +95,31 @@ export default function Home() {
               {boards.map(board => (
                 <Tab.Panel
                   key={board.id}
-                  className="relative flex-1 w-full p-6 overflow-x-auto bg-gray-100 focus:outline-none snap-x snap-mandatory">
-                  <div className="flex space-x-6 snap-x snap-mandatory">
+                  className="relative flex flex-1 w-full p-6 overflow-x-auto bg-gray-100 focus:outline-none snap-x snap-mandatory">
+                  <div className="flex justify-start flex-1 space-x-6 snap-x snap-mandatory">
                     {board.jobs.map(job => (
                       <Job key={job.id} job={job} refetch={refetch} />
                     ))}
-                    <div className="flex-shrink-0 w-6 !ml-0" />
+
+                    <button
+                      className="relative flex items-center justify-center flex-shrink-0 w-12 space-x-1 bg-gray-200 rounded hover:bg-gray-300"
+                      onClick={() => createJob(board.id)}>
+                      <div className="absolute flex items-center justify-center flex-1 space-x-1 transform rotate-90 w-36">
+                        <svg
+                          className="w-4 h-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span className="text-sm font-medium tracking-wide uppercase">
+                          Add Job
+                        </span>
+                      </div>
+                    </button>
                   </div>
                 </Tab.Panel>
               ))}

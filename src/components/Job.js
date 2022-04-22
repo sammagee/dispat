@@ -1,13 +1,29 @@
-import useEcho from '@/hooks/echo'
+import useEvent from '@/hooks/event'
 import useJobs from '@/hooks/jobs'
 import Item from './Item'
 
 export default function Job({ job, refetch }) {
   const { removeJob, removeJobLocomotive, removeJobAssignee } = useJobs()
 
-  useEcho({
+  useEvent({
     channel: 'board',
-    events: ['job.deleted', 'job.locomotive-deleted', 'job.assignee-deleted'],
+    event: 'job.deleted',
+    callback: e => {
+      refetch()
+    },
+  })
+
+  useEvent({
+    channel: 'board',
+    event: 'job.locomotive-deleted',
+    callback: e => {
+      refetch()
+    },
+  })
+
+  useEvent({
+    channel: 'board',
+    event: 'job.assignee-deleted',
     callback: e => {
       refetch()
     },
