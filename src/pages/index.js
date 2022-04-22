@@ -1,18 +1,49 @@
 import Job from '@/components/Job'
 import AppLayout from '@/components/Layouts/AppLayout'
+import Modal from '@/components/Modal'
 import useEvents from '@/hooks/events'
 import useWhiteboard from '@/hooks/whiteboard'
 import { Tab } from '@headlessui/react'
 import clsx from 'clsx'
 import Head from 'next/head'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import '../lib/echo'
 
 export default function Home() {
-  const { boards, createJob, removeBoard, refetch } = useWhiteboard()
+  const {
+    boards,
+    createBoard,
+    createJob,
+    removeBoard,
+    refetch,
+    updateBoard,
+  } = useWhiteboard()
+  const renameInput = useRef(null)
+  const [renameBoardModalOpen, setRenameBoardModalOpen] = useState(false)
   const [selectedBoard, setSelectedBoard] = useState(0)
 
+  const renameBoard = async event => {
+    const name = event.target.name.value
+
+    if (!name) return
+
+    try {
+      await updateBoard(boards?.[selectedBoard].id, {
+        name,
+      })
+      setRenameBoardModalOpen(false)
+    } catch (e) {
+      setRenameBoardModalOpen(true)
+    }
+  }
+
   useEvents({ callback: refetch })
+
+  useEffect(() => {
+    if (renameBoardModalOpen) {
+      setTimeout(() => renameInput.current?.focus(), 300)
+    }
+  }, [renameBoardModalOpen])
 
   return (
     <AppLayout>
@@ -36,7 +67,8 @@ export default function Home() {
                           ? 'bg-gray-100 shadow text-gray-800'
                           : 'text-gray-600 hover:bg-gray-300',
                       )
-                    }>
+                    }
+                    onDoubleClick={() => setRenameBoardModalOpen(true)}>
                     {({ selected }) => (
                       <>
                         <span className="select-none">{board.name}</span>
@@ -70,6 +102,26 @@ export default function Home() {
                     )}
                   </Tab>
                 ))}
+
+                <button
+                  className="flex items-center justify-center flex-shrink-0 px-4 space-x-1 text-gray-600 bg-gray-200 rounded-t hover:bg-gray-300"
+                  onClick={createBoard}>
+                  <div className="flex items-center justify-center flex-1 space-x-1">
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-sm font-medium tracking-wide uppercase">
+                      Add Board
+                    </span>
+                  </div>
+                </button>
               </div>
             </Tab.List>
 
@@ -134,6 +186,21 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      <Modal
+        open={renameBoardModalOpen}
+        close={() => setRenameBoardModalOpen(false)}
+        title="Rename Board"
+        submitText="Save"
+        onSubmit={renameBoard}>
+        <input
+          ref={renameInput}
+          name="name"
+          className="w-full h-10 px-4 text-sm font-medium text-gray-800 border rounded"
+          type="text"
+          defaultValue={boards?.[selectedBoard]?.name}
+        />
+      </Modal>
     </AppLayout>
   )
 }
