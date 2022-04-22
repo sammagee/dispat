@@ -38,7 +38,7 @@ export default function Job({ job, refetch }) {
   })
 
   return (
-    <div className="w-full p-4 bg-gray-200 min-w-[16rem] max-w-sm rounded space-y-6 snap-center relative group">
+    <div className="w-full p-4 bg-gray-200 min-w-[20rem] max-w-sm rounded space-y-6 snap-center relative group">
       <header>
         <h2 className="text-lg font-medium text-gray-600">{job.name}</h2>
 

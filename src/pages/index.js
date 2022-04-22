@@ -90,7 +90,7 @@ export default function Home() {
             <div className="absolute z-0 w-full h-5 shadow top-[4.5rem]" />
 
             <Tab.Panels className="relative z-20 flex flex-1">
-              <div className="absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-gray-100 to-transparent" />
+              <div className="absolute inset-y-0 left-0 z-10 w-6 bg-gradient-radial-to-r from-gray-100 via-transparent" />
 
               {boards.map(board => (
                 <Tab.Panel
@@ -124,7 +124,7 @@ export default function Home() {
                 </Tab.Panel>
               ))}
 
-              <div className="absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-r from-transparent to-gray-100" />
+              <div className="absolute inset-y-0 right-0 z-10 w-6 bg-gradient-radial-to-l from-gray-100 via-transparent" />
             </Tab.Panels>
           </Tab.Group>
         ) : (

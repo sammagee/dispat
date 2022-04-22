@@ -50,7 +50,7 @@ export default function Autocomplete({ button, items, onChange, placeholder }) {
                   key={item.value}
                   className={({ active }) =>
                     clsx(
-                      'cursor-default select-none relative h-12 flex items-center justify-between text-sm px-4',
+                      'cursor-pointer select-none relative h-12 flex items-center justify-between text-sm px-4',
                       active ? 'text-gray-700 bg-gray-200' : 'text-gray-600',
                     )
                   }
