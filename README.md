@@ -23,3 +23,5 @@ This command will run the development server.
 ```sh
 npm run dev
 ```
+
+The application should now be running at [localhost:3000](http://localhost:3000).
