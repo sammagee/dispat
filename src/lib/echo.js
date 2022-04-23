@@ -1,4 +1,5 @@
 import LaravelEcho from 'laravel-echo'
+import axios from './axios'
 
 if (typeof window !== 'undefined') {
   window.Pusher = require('pusher-js')
@@ -9,5 +10,22 @@ if (typeof window !== 'undefined') {
     wsPort: 6001,
     enabledTransports: ['ws', 'wss'],
     forceTLS: false,
+    authorizer: (channel, options) => {
+      return {
+        authorize: (socketId, callback) => {
+          axios
+            .post('/broadcasting/auth', {
+              socket_id: socketId,
+              channel_name: channel.name,
+            })
+            .then(response => {
+              callback(false, response.data)
+            })
+            .catch(error => {
+              callback(true, error)
+            })
+        },
+      }
+    },
   })
 }

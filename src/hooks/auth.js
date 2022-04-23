@@ -1,10 +1,19 @@
 import axios from '@/lib/axios'
-import userMock from '@/mocks/user'
+import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import useLocalStorage from './localStorage'
+import useSWR from 'swr'
 
-export const useAuth = () => {
-  const [user, setUser] = useLocalStorage('user')
+export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
+  const router = useRouter()
+
+  const { data: user, error, mutate } = useSWR('/api/user', () =>
+    axios
+      .get('/api/user')
+      .then(res => res.data)
+      .catch(error => {
+        throw error
+      }),
+  )
 
   const csrf = () => axios.get('/sanctum/csrf-cookie')
 
@@ -23,14 +32,40 @@ export const useAuth = () => {
       })
   }
 
-  useEffect(() => {
-    if (!user) {
-      setUser(userMock())
+  const login = async ({ setErrors, setStatus, ...props }) => {
+    await csrf()
+
+    setErrors([])
+    setStatus(null)
+
+    axios
+      .post('/login', props)
+      .then(() => mutate())
+      .catch(error => {
+        if (error.response.status !== 422) throw error
+
+        setErrors(Object.values(error.response.data.errors).flat())
+      })
+  }
+
+  const logout = async () => {
+    if (!error) {
+      await axios.post('/logout').then(() => mutate())
     }
-  }, [user, setUser])
+
+    window.location.pathname = '/login'
+  }
+
+  useEffect(() => {
+    if (middleware === 'guest' && redirectIfAuthenticated && user)
+      router.push(redirectIfAuthenticated)
+    if (middleware === 'auth' && error) logout()
+  }, [user, error])
 
   return {
     user,
-    csrf,
+    register,
+    login,
+    logout,
   }
 }

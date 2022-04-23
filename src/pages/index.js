@@ -1,3 +1,4 @@
+import Input from '@/components/Input'
 import Job from '@/components/Job'
 import AppLayout from '@/components/Layouts/AppLayout'
 import Modal from '@/components/Modal'
@@ -21,6 +22,7 @@ export default function Home() {
   const renameInput = useRef(null)
   const [renameBoardModalOpen, setRenameBoardModalOpen] = useState(false)
   const [selectedBoard, setSelectedBoard] = useState(0)
+  const { viewingUsers } = useEvents({ callback: refetch })
 
   const renameBoard = async event => {
     const name = event.target.name.value
@@ -37,8 +39,6 @@ export default function Home() {
     }
   }
 
-  useEvents({ callback: refetch })
-
   useEffect(() => {
     if (renameBoardModalOpen) {
       setTimeout(() => renameInput.current?.focus(), 300)
@@ -46,7 +46,7 @@ export default function Home() {
   }, [renameBoardModalOpen])
 
   return (
-    <AppLayout>
+    <AppLayout viewingUsers={viewingUsers}>
       <Head>
         <title>Dispat</title>
       </Head>
@@ -193,10 +193,9 @@ export default function Home() {
         title="Rename Board"
         submitText="Save"
         onSubmit={renameBoard}>
-        <input
+        <Input
           ref={renameInput}
           name="name"
-          className="w-full h-10 px-4 text-sm font-medium text-gray-800 border rounded"
           type="text"
           defaultValue={boards?.[selectedBoard]?.name}
         />

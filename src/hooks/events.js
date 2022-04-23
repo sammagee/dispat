@@ -1,12 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function useEvents({ callback }) {
+  const [viewingUsers, setViewingUsers] = useState([])
   const callbackFn = e => {
     callback()
   }
 
   useEffect(() => {
-    Echo.channel('board')
+    Echo.join('board')
+      .here(users => setViewingUsers(users))
+      .joining(user => setViewingUsers(prev => [...prev, user]))
+      .leaving(user =>
+        setViewingUsers(prev => prev.filter(u => u.id !== user.id)),
+      )
       .listen(`.board.created`, callbackFn)
       .listen(`.board.deleted`, callbackFn)
       .listen(`.board.updated`, callbackFn)
@@ -21,4 +27,6 @@ export default function useEvents({ callback }) {
 
     return () => Echo.leave('board')
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  return { viewingUsers }
 }
